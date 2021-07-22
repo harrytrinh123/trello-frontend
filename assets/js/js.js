@@ -29,7 +29,7 @@ $(document).ready(function() {
   // key listener to add new lists
   $('input[name="newlistname"]').keyup(function(event) {
     if(event.key == "Enter" || event.keycode == "13") {
-      $(this).before('<div class="sortable"><h5 class="nodrag header">' +$(this).val()+'</h5><input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>')
+      $(this).before('<div class="sortable"><h5 class="nodrag list-header">' +$(this).val()+'</h5><input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>')
       $(this).val('');
       updateListSortables();
 

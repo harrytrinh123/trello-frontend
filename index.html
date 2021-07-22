@@ -2,26 +2,71 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 
-    <script src="./assets/js/jquery-3.6.0.min.js"></script>
-    <script src="./assets/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
-    <!-- <script type="text/javascript" src="./assets/js/tether.min.js"></script> -->
-    <script type="text/javascript" src="./assets/js/js.js"></script>
+  <script src="./assets/js/jquery-3.6.0.min.js"></script>
+  <script src="./assets/js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
+  <!-- <script type="text/javascript" src="./assets/js/tether.min.js"></script> -->
+  <script type="text/javascript" src="./assets/js/js.js"></script>
 
-    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./assets/fontawesome-free-5.15.3-web/css/all.css">
+  <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/fontawesome-free-5.15.3-web/css/all.css">
 </head>
 
 <body>
-    <div class="oversort">
-        <input type="text" class="newlistinput" name="newlistname" placeholder="Add New List..." />
+  <div class="windows">
+    <div class="row header">
+      <div class="col-md-5 header-left">
+        <div class="header-icon">
+          <i class="fas fa-th"></i>
+        </div>
+        <div class="header-icon">
+          <i class="fas fa-home"></i>
+        </div>
+        <div class="header-icon">
+          <i class="fas fa-table"></i>
+          <span>Bảng</span>
+        </div>
+        <div class="header-icon">
+          <div class="input-group rounded">
+            <input type="search" class="form-control rounded search-input" placeholder="Chuyển đến..."
+              aria-label="Search" aria-describedby="search-addon" />
+            <span class="input-group-text border-0" id="search-addon">
+              <i class="fas fa-search"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="logo"></div>
+      </div>
+      <div class="col-md-3"></div>
+      <div class="col-md-2 header-right">
+        <div class="header-icon">
+          <i class="fas fa-plus"></i>
+        </div>
+        <div class="header-icon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="header-icon">
+          <i class="far fa-bell"></i>
+        </div>
+        <div class="header-icon">
+          <div class="avatar">
+            <img src="./assets/images/avatar.png" alt="">
+          </div>
+        </div>
+      </div>
     </div>
+    <div class="oversort">
+      <input type="text" class="newlistinput" name="newlistname" placeholder="Add New List..." />
+    </div>
+  </div>
 </body>
 
 </html>
