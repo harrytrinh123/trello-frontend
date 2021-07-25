@@ -29,30 +29,34 @@ async function getApi(url) {
   // Storing data in form of JSON
   var data = await response.json();
   // show lists
-  showLists(data);
+   showLists(data);
   return data;
 }
 
-function showLists(data) {
+async function fetchCards(url) {
+  try {
+    let res = await fetch(url);
+    return await res.json();
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+async function showLists(data) {
   let lst = "";
   for (var i = 0; i < data.length; i++) {
     lst += '<div id="' + data[i]["id"] + '" class="sortable"><h5 class="nodrag list-header">' + data[i]["name"] + '</h5>';
-    let cards = "";
-    // NEED TO FIX IT
-    // fetch(getCards + data[i]["id"] + "/cards")
-    //   .then(response => response.json())
-    //   .then(dt => {
-    //     for (let i = 0; i < dt.length; i++) {
-    //       cards += '<div class="card-item">' + dt[i]["name"] + '</div>';
-    //     }
-    //     console.log(dt) // Prints result from `response.json()` in getRequest
-    //     console.log(cards);
-    //   })
-    //   .catch(error => console.error(error));
+    let cardsText = "";
+    let urlGetCards = getCards + data[i]["id"] + '/cards';
+    let cards = await fetchCards(urlGetCards);
+    cards.forEach(card => {
+      cardsText += '<div class="card-item">' + card.name + '</div>';
+    });
     
-    lst += cards;
+    lst += cardsText;
     lst += '<input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>';
   }
+  console.log(lst)
   newlstinput = $(".newlistinput");
   newlstinput.before(lst);
 }
