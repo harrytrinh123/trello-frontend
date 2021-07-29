@@ -1,5 +1,8 @@
 const getLists = "https://localhost:44395/api/boards/6089796c27952b1ac618b338/lists";
 const getCards = "https://localhost:44395/api/lists/";
+const listUrl = "https://localhost:44395/api/lists/";
+const boardId = "6089796c27952b1ac618b338";
+// SORT ABLE
 function updateListSortables() {
   $(".sortable").sortable({
     connectWith: ".sortable",
@@ -21,7 +24,8 @@ function updateListSortables() {
   });
 }
 
-async function getApi(url) {
+// LOAD LIST AND CARD
+async function loadListAndCardData(url) {
 
   // Storing response
   const response = await fetch(url);
@@ -29,7 +33,7 @@ async function getApi(url) {
   // Storing data in form of JSON
   var data = await response.json();
   // show lists
-   showLists(data);
+  showLists(data);
   return data;
 }
 
@@ -45,24 +49,50 @@ async function fetchCards(url) {
 async function showLists(data) {
   let lst = "";
   for (var i = 0; i < data.length; i++) {
-    lst += '<div id="' + data[i]["id"] + '" class="sortable"><h5 class="nodrag list-header">' + data[i]["name"] + '</h5>';
+    var del = 'del-' + data[i]["id"];
+    lst += '<div id="' + data[i]["id"] + '" class="sortable"><h5 class="nodrag list-header"><a onclick="deleteList(this.id)" id="'+del+'" href="#" class="delList"><i class="far fa-trash-alt"></i></a>' + data[i]["name"] + '</h5>';
     let cardsText = "";
     let urlGetCards = getCards + data[i]["id"] + '/cards';
     let cards = await fetchCards(urlGetCards);
     cards.forEach(card => {
-      cardsText += '<div class="card-item">' + card.name + '</div>';
+      cardsText += '<div class="card-item"><p>' + card.name + '</p><button>X</button></div>';
     });
     
     lst += cardsText;
     lst += '<input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>';
   }
-  console.log(lst)
   newlstinput = $(".newlistinput");
   newlstinput.before(lst);
 }
 
+// Create , update, Delete
+async function createList(listName,  boardId) {
+  const response = await fetch(listUrl + listName + "&" + boardId, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+async function deleteListFetch(listId) {
+  const response = await fetch(listUrl + listId + "/archive", {
+    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+  });
+}
+
+function deleteList(delId) {
+  var listId = delId.substring(4, delId.length);
+  $('#' + listId).remove();
+  deleteListFetch(listId);
+}
+
+// READY FUNCTION
 $(document).ready(function () {
-  getApi(getLists);
   $(".oversort").sortable(
     {
       items: ":not(.nodrag)", placeholder: "sortable-placeholder"
@@ -72,13 +102,14 @@ $(document).ready(function () {
   // key listener to add new lists
   $('input[name="newlistname"]').keyup(function (event) {
     if (event.key == "Enter" || event.keycode == "13") {
-      $(this).before('<div class="sortable"><h5 class="nodrag list-header">' + $(this).val() + '</h5><input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>')
+
+      $(this).before('<div class="sortable"><h5 class="nodrag list-header"><a href="#" class="delList"><i class="far fa-trash-alt"></i></a>' + $(this).val() + '</h5><input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>')
       $(this).val('');
       updateListSortables();
-
       var oversort = $(this).closest('.oversort');
       // $(oversort).scrollLeft($(oversort).prop("scrollWidth") - $(oversort).width());
     }
   });
 
+  loadListAndCardData(getLists);
 });
