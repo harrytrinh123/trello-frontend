@@ -50,7 +50,8 @@ async function showLists(data) {
   let lst = "";
   for (var i = 0; i < data.length; i++) {
     var del = 'del-' + data[i]["id"];
-    lst += '<div id="' + data[i]["id"] + '" class="sortable"><h5 class="nodrag list-header"><a onclick="deleteList(this.id)" id="'+del+'" href="#" class="delList"><i class="far fa-trash-alt"></i></a>' + data[i]["name"] + '</h5>';
+    var up = 'up-' + data[i]["id"];
+    lst += '<div id="' + data[i]["id"] + '" class="sortable"><h5 onclick="updateList(this.id)" id="'+up+'" class="nodrag list-header">' + data[i]["name"] + '</h5><a onclick="deleteList(this.id)" id="'+del+'" href="#" class="delList"><i class="far fa-trash-alt"></i></a>';
     let cardsText = "";
     let urlGetCards = getCards + data[i]["id"] + '/cards';
     let cards = await fetchCards(urlGetCards);
@@ -89,6 +90,36 @@ function deleteList(delId) {
   var listId = delId.substring(4, delId.length);
   $('#' + listId).remove();
   deleteListFetch(listId);
+}
+
+async function updateListFetch(listId, data = {}) {
+  // Default options are marked with *
+  const response = await fetch(listUrl + listId, {
+    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+function updateList(upId) {
+  var valTitle = $('#' + upId).text();
+  $('#' + upId).html('<input class="input-edit" value="' + valTitle + '">');
+  $('#' + upId + ' input').focus();
+  $('.input-edit').keyup(function (e) {
+    if (e.keyCode === 13) {
+        var upVal = $(this).val();
+        $('#' + upId).html('<h5 onclick="updateList(this.id)" id="'+upId+'" class="nodrag list-header">'+upVal+'</h5>');
+        var listId = upId.substring(3, upId.length);
+        updateListFetch(listId, {'name' : upVal});
+    }
+});
 }
 
 // READY FUNCTION

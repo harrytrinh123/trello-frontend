@@ -104,6 +104,7 @@
     margin: 5px;
     padding: 5px;
     cursor: pointer;
+    display: inline;
 }
 
 .sortable .card-item {
@@ -158,6 +159,7 @@
     float: right;
     font-size: 16px;
     color: inherit;
+    padding: 5px;
 }
 
 .card-item p {
@@ -173,4 +175,10 @@
 .card-item:hover button {
     display: block;
     cursor: pointer;
+}
+
+.input-edit {
+    width: 80%;
+    border: solid 1px gray;
+    border-radius: 4px;
 }
