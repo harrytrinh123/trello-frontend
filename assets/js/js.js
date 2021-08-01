@@ -1,6 +1,7 @@
 const getLists = "https://localhost:44395/api/boards/6089796c27952b1ac618b338/lists";
 const getCards = "https://localhost:44395/api/lists/";
 const listUrl = "https://localhost:44395/api/lists/";
+const cardUrl = "https://localhost:44395/api/cards/";
 const boardId = "6089796c27952b1ac618b338";
 // SORT ABLE
 function updateListSortables() {
@@ -18,6 +19,8 @@ function updateListSortables() {
   // key listener to add new list items
   $('input[name="newlistitem"]').unbind().keyup(function (event) {
     if (event.key == "Enter" || event.keycode == "13") {
+      var listId = $(this).parent();
+      createCardFetch(listId, {'name' : $(this).val()});
       $(this).before('<div class="card-item">' + $(this).val() + '</div>');
       $(this).val('');
     }
@@ -56,7 +59,7 @@ async function showLists(data) {
     let urlGetCards = getCards + data[i]["id"] + '/cards';
     let cards = await fetchCards(urlGetCards);
     cards.forEach(card => {
-      cardsText += '<div class="card-item"><p>' + card.name + '</p><button>X</button></div>';
+      cardsText += '<div class="card-item"><p onclick="updateCard(this.id)" id="p-'+card.id+'">' + card.name + '</p><button onclick="deleteCard(this.id)" id="btn-'+card.id+'">X</button></div>';
     });
     
     lst += cardsText;
@@ -66,7 +69,7 @@ async function showLists(data) {
   newlstinput.before(lst);
 }
 
-// Create , update, Delete
+// Create , update, Delete list
 async function createList(listName,  boardId) {
   const response = await fetch(listUrl + listName + "&" + boardId, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -122,8 +125,69 @@ function updateList(upId) {
 });
 }
 
+// Create, update, delete card
+// NEED TO FIX
+var createCardURl = "https://api.trello.com/1/cards?key=07e57a8c0ff7205b8202479a1d9ed50d&token=16a827c827226d35375b00936d65bea64d6c964f8e2e638f87fb9b27143eae7d&idList=";
+async function createCardFetch(listId, card = {}) {
+  const response = await fetch(createCardURl + listId, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    body: JSON.stringify(card)
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+// Update
+async function updateCardFetch(cardId, data = {}) {
+  // Default options are marked with *
+  const response = await fetch(cardUrl + cardId, {
+    method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+function updateCard(upId) {
+  var valTitle = $('#' + upId).text();
+  $('#' + upId).html('<input class="input-edit" value="' + valTitle + '">');
+  $('#' + upId + ' input').focus();
+  $('.input-edit').keyup(function (e) {
+    if (e.keyCode === 13) {
+        var upVal = $(this).val();
+        $('#' + upId).html(upVal);
+        var listId = upId.substring(2, upId.length);
+        updateCardFetch(listId, {'name' : upVal});
+    }
+});
+}
+// Delete
+async function deleteCardFetch(cardId) {
+  const response = await fetch(cardUrl + cardId, {
+    method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+  });
+}
+
+function deleteCard(carIdBtn) {
+  var cardId = carIdBtn.substring(4, carIdBtn.length);
+  deleteCardFetch(cardId);
+  $('#' + carIdBtn).parent().remove();
+}
+
+
 // READY FUNCTION
 $(document).ready(function () {
+  loadListAndCardData(getLists);
   $(".oversort").sortable(
     {
       items: ":not(.nodrag)", placeholder: "sortable-placeholder"
@@ -133,14 +197,12 @@ $(document).ready(function () {
   // key listener to add new lists
   $('input[name="newlistname"]').keyup(function (event) {
     if (event.key == "Enter" || event.keycode == "13") {
-
+      createList($(this).val(), boardId);
       $(this).before('<div class="sortable"><h5 class="nodrag list-header"><a href="#" class="delList"><i class="far fa-trash-alt"></i></a>' + $(this).val() + '</h5><input type="text" class="nodrag anchorBottom newlistitem" name="newlistitem" placeholder="New List Item..." /></div>')
       $(this).val('');
       updateListSortables();
       var oversort = $(this).closest('.oversort');
-      // $(oversort).scrollLeft($(oversort).prop("scrollWidth") - $(oversort).width());
+      // $(oversort).scrollLeft($(oversort).prop("s)crollWidth") - $(oversort).width());
     }
   });
-
-  loadListAndCardData(getLists);
 });

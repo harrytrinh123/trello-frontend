@@ -182,3 +182,7 @@
     border: solid 1px gray;
     border-radius: 4px;
 }
+
+.sortable input {
+    display: block;
+}
